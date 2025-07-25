@@ -1,0 +1,121 @@
+# services:
+#   ssdtestnginx:
+#     image: nginx:alpine
+#     container_name: ssdtestnginxwebsvr
+#     ports:
+#     - "80:80"
+#   gitserver:
+#     build:
+#       dockerfile: ./repos/gitserver.Dockerfile
+#       context: .
+#     restart: always
+#     ports:
+#     - "3001:3000"
+#     volumes:
+#     - ./repos:/var/www/git
+#   node-app:
+    
+# version: '3.8'
+
+# services:
+#   nginx:
+#     image: nginx:latest
+#     container_name: nginx-proxy-test
+#     restart: unless-stopped
+#     ports:
+#       - "80:80"
+#     volumes:
+#       # - ./repository/nginx.conf:/etc/nginx/nginx.conf:ro
+#       - ./nginx.conf:/etc/nginx/nginx.conf:ro
+
+#     depends_on:
+#       - node-app
+#     networks:
+#       lab-webproxy:
+#         ipv4_address: 10.11.0.6
+
+#   node-app:
+#     build:
+#       context: .
+#       #context: ./repository
+#       dockerfile: Dockerfile
+#     container_name: node-server
+#     restart: unless-stopped
+#     expose:
+#       - "3000"
+#     volumes:
+#         # - ./repository:/app
+#         - ./:/app
+
+#     networks:
+#       lab-webproxy:
+#         ipv4_address: 10.11.0.5
+
+#   git-server:
+#     build:
+#       # dockerfile: ./repos/gitserver.Dockerfile
+#       dockerfile: ../repos/gitserver.Dockerfile
+#       context: .
+#     restart: always
+#     ports:
+#     - "3001:3000"
+#     volumes:
+#     # - ./repos:/var/www/git
+#     - ../repos:/var/www/git
+
+# networks:
+#   lab-webproxy:
+#     driver: bridge
+#     ipam:
+#       config:
+#         - subnet: 10.11.0.0/16
+#           gateway: 10.11.0.1
+
+version: '3.8'
+
+services:
+  nginx:
+    image: nginx:latest
+    container_name: nginx-proxy-test
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro  # moved up one because compose moved
+    depends_on:
+      - node-app
+    networks:
+      lab-webproxy:
+        ipv4_address: 10.11.0.6
+
+  node-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: node-server
+    restart: unless-stopped
+    expose:
+      - "3000"
+    volumes:
+      - ./:/app
+    networks:
+      lab-webproxy:
+        ipv4_address: 10.11.0.5
+
+  git-server:
+    build:
+      context: ./repos
+      dockerfile: gitserver.Dockerfile
+    restart: always
+    ports:
+      - "3001:3000"
+    volumes:
+      - ./repos:/var/www/git
+
+networks:
+  lab-webproxy:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.11.0.0/16
+          gateway: 10.11.0.1
