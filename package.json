@@ -17,6 +17,7 @@
     "express": "^5.1.0",
     "mocha": "^11.7.1",
     "save-dev": "^0.0.1-security",
+    "selenium-webdriver": "^4.34.0",
     "supertest": "^7.1.4"
   },
   "devDependencies": {
